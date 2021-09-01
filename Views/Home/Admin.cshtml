@@ -1,0 +1,16 @@
+@model UserDetailViewModel
+@{
+    ViewData["Title"] = "Area riservata";
+}
+<div>
+    <h1 class="display-4">Pagina riservata</h1>
+    <p>Pagina riservata agli utenti registrati, che hanno effettuato il login</p>
+    <p>Dati utente:</p>
+    <p><ul>
+        <li>Cognome: @Model.Cognome</li>
+        <li>Nome: @Model.Nome</li>
+        <li>Email: @Model.Email</li>
+        <li>Username: @Model.Username</li>
+    </ul></p>
+    <p><a asp-action="Logout">Esci</a></p>
+</div>
