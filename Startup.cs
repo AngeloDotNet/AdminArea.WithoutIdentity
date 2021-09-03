@@ -1,3 +1,4 @@
+using AdminArea_Without_Identity.Models.Options;
 using AspNetCore_SimpleLogin.Models.Options;
 using AspNetCore_SimpleLogin.Models.Services.Application;
 using AspNetCore_SimpleLogin.Models.Services.Infrastructure;
@@ -34,6 +35,7 @@ namespace AspNetCore_SimpleLogin
 
             services.Configure<ConnectionStringsOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<KestrelServerOptions>(Configuration.GetSection("Kestrel"));
+            services.Configure<SecurityOptions>(Configuration.GetSection("Security"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -3,9 +3,11 @@ using System.Data;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using AdminArea_Without_Identity.Models.Options;
 using AspNetCore_SimpleLogin.Models.Services.Infrastructure;
 using AspNetCore_SimpleLogin.Models.ViewModels;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AspNetCore_SimpleLogin.Models.Services.Application
 {
@@ -13,11 +15,13 @@ namespace AspNetCore_SimpleLogin.Models.Services.Application
     {
         private readonly ILogger<AdoNetUserService> logger;
         private readonly IDatabaseAccessor db;
+        private readonly IOptionsMonitor<SecurityOptions> securityOptionsMonitor;
 
-        public AdoNetUserService(ILogger<AdoNetUserService> logger, IDatabaseAccessor db)
+        public AdoNetUserService(ILogger<AdoNetUserService> logger, IDatabaseAccessor db, IOptionsMonitor<SecurityOptions> securityOptionsMonitor)
         {
             this.logger = logger;
             this.db = db;
+            this.securityOptionsMonitor = securityOptionsMonitor;
         }
 
         public async Task<bool> IsLoginCorrectAsync(string username, string password)
@@ -48,7 +52,12 @@ namespace AspNetCore_SimpleLogin.Models.Services.Application
 
         public string PasswordSalt(string password)
         {
-            using var deriveBytes = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes("^!T$Nu8_KR&NmP!HGzjw%*zNP"), 10000, HashAlgorithmName.SHA256);
+            var options = this.securityOptionsMonitor.CurrentValue;
+
+            //Per le proprietà di HashAlgorithmName consultare il link: https://docs.microsoft.com/it-it/dotnet/api/system.security.cryptography.hashalgorithmname?view=net-5.0
+            using var deriveBytes = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(options.PasswordSalt), 
+                                                        options.Iterations, HashAlgorithmName.SHA256);
+            
             byte[] bytes = deriveBytes.GetBytes(256 / 8);
             string passwordCifrata = Convert.ToBase64String(bytes);
 
